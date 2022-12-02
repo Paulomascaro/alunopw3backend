@@ -10,11 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.rmi.server.ExportException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-//@CrossOrigin("http://localhost:4200") //aceitando requisicao desse endereco
+@CrossOrigin("http://localhost:4200")
 @RestController
 public class AlunoController {
     @Autowired
@@ -27,6 +28,16 @@ public class AlunoController {
             return new ResponseEntity<>(alunos, HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "api/alunos/{id}")
+    public ResponseEntity<Aluno> getAluno(@PathVariable(value = "id")long id) {
+        try {
+            Optional<Aluno>aluno = alunoRepository.findById(id);
+            return aluno.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
     @PostMapping(value = "api/alunos")
